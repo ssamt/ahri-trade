@@ -8,16 +8,18 @@ books = book_f.read().splitlines()
 def get_data(wb):
     names = [[] for i in range(len(books))]
     wb = wb['설문지 응답 시트1']
-    wb = [[str(cell.value) for cell in row] for row in wb]
+    wb = [[str(cell.value).strip() for cell in row] for row in wb]
     name_idx = dict()
     for i in range(1, len(wb)):
         name_idx[wb[i][1]] = i
-    for name in name_idx:
-        idx = name_idx[name]
-        all_books = ', '.join(wb[idx][2:11])
-        for i in range(len(books)):
-            if books[i] in all_books:
-                names[i].append(name)
+    idx_name = {name_idx[k]:k for k in name_idx.keys()}
+    for i in range(1, len(wb)):
+        if i in idx_name:
+            name = idx_name[i]
+            all_books = ', '.join(wb[i][2:11])
+            for j in range(len(books)):
+                if books[j] in all_books:
+                    names[j].append(name)
     return names
 
 BUY, SELL = 0, 1
@@ -30,6 +32,16 @@ for i in range(len(books)):
     print(books[i])
     print(f'구매: {buy[i]}')
     print(f'판매: {sell[i]}')
+print('')
+print('구매가 더 많음')
+for i in range(len(books)):
+    if len(buy[i]) > len(sell[i]):
+        print(books[i])
+print('판매가 더 많음')
+for i in range(len(books)):
+    if len(buy[i]) < len(sell[i]):
+        print(books[i])
+print('')
 for i in range(len(books)):
     amount = min(len(buy[i]), len(sell[i]))
     for j in range(len(buy[i])):
@@ -41,11 +53,11 @@ for p in people:
     for book in people[p]:
         if book[0] == BUY:
             if book[1]:
-                print(f'구매: {books[book[2]]}')
+                print(f'[구매 O]: {books[book[2]]}')
             else:
-                print(f'구매 실패: {books[book[2]]}')
+                print(f'[구매 X]: {books[book[2]]}')
         else:
             if book[1]:
-                print(f'판매: {books[book[2]]}')
+                print(f'[판매 O]: {books[book[2]]}')
             else:
-                print(f'판매 실패: {books[book[2]]}')
+                print(f'[판매 X]: {books[book[2]]}')
